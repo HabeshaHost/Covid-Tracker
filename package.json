@@ -4,10 +4,7 @@
   "private": true,
   "dependencies": {
     "@tanstack/react-query": "^4.35.0",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
     "@types/node": "^16.18.48",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
@@ -24,7 +21,6 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -32,7 +28,7 @@
     "client": "react-scripts start",
     "server": "cd server && nodemon",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "lint:fix": "eslint 'src/**/*.{js,ts}' --fix"
@@ -56,10 +52,16 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.3",
+    "@testing-library/react": "^14.0.0",
     "@types/cors": "^2.8.14",
+    "@types/jest": "^29.5.4",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.49.0",
     "install": "^0.13.0",
-    "npm": "^10.1.0"
+    "jest": "^29.6.4",
+    "npm": "^10.1.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
   }
 }

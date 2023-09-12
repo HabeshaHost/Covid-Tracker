@@ -1,21 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { StateData, StateMetadata } from "../../api/types";
 import { Table, Spin, Alert } from "antd";
-import type { TableColumnsType, TablePaginationConfig } from "antd";
+import type { TableColumnsType } from "antd";
 import { toNumber } from "lodash";
 import useGetStateData from "../../hooks/useGetStateData";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import AppWrapper from "../../components/Wrappers/AppWrapper";
 import queryString from "query-string";
 import { STATE_META_DATA_KEY } from "../../utils/constants";
 import { getFromSessionStorage } from "../../utils/getFromSessionStorage";
-
-interface ExpandedDataType {
-  key: React.Key;
-  date: string;
-  name: string;
-  upgradeNum: string;
-}
 
 const containerStyle: React.CSSProperties = {
   margin: "16px",
