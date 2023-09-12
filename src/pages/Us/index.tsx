@@ -1,70 +1,28 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { NationalData } from "../../api/types";
-import { Badge, Dropdown, Space, Table, Spin, Alert } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { Table, Spin, Alert } from "antd";
 import type { TableColumnsType } from "antd";
 import useGetNationalData from "../../hooks/useGetNationalData";
 import { useParams } from "react-router-dom";
 import AppWrapper from "../../components/Wrappers/AppWrapper";
 import useScreenSize from "../../hooks/useScreenSize";
 
-interface ExpandedDataType {
-  key: React.Key;
-  date: string;
-  name: string;
-  upgradeNum: string;
-}
-
 const Us: React.FC = () => {
   const { date } = useParams();
-
-  const { data, isLoading, isError } = useGetNationalData({
-    selectedDate: date,
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
   });
 
+  const { data, isLoading, isError, total } = useGetNationalData({
+    selectedDate: date,
+    page: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+  
   const memoizedData = useMemo(() => data, [data]);
 
   const isSmallScreen = useScreenSize();
-
-  const expandedRowRender = () => {
-    const columns: TableColumnsType<ExpandedDataType> = [
-      { title: "Date", dataIndex: "date", key: "date" },
-      { title: "Name", dataIndex: "name", key: "name" },
-      {
-        title: "Status",
-        key: "state",
-        render: () => <Badge status="success" text="Finished" />,
-      },
-      { title: "Upgrade Status", dataIndex: "upgradeNum", key: "upgradeNum" },
-      {
-        title: "Action",
-        dataIndex: "operation",
-        key: "operation",
-        render: () => (
-          <Space size="middle">
-            <a>Pause</a>
-            <a>Stop</a>
-            <Dropdown overlay={<></>}>
-              <a>
-                More <DownOutlined />
-              </a>
-            </Dropdown>
-          </Space>
-        ),
-      },
-    ];
-
-    const data = [];
-    for (let i = 0; i < 3; ++i) {
-      data.push({
-        key: i.toString(),
-        date: "2014-12-24 23:12:00",
-        name: "This is production name",
-        upgradeNum: "Upgraded: 56",
-      });
-    }
-    return <Table columns={columns} dataSource={data} pagination={false} />;
-  };
 
   const columns: TableColumnsType<NationalData> = [
     { title: "Date", dataIndex: "date", key: "date" },
@@ -124,8 +82,15 @@ const Us: React.FC = () => {
       <div style={containerStyle}>
         <Table
           columns={columns}
-          expandable={{ expandedRowRender, defaultExpandedRowKeys: ["0"] }}
           dataSource={memoizedData}
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total,
+          }}
+          onChange={({ pageSize, current }) =>
+            setPagination({ pageSize: pageSize || 0, current: current || 0 })
+          }
         />
       </div>
     </AppWrapper>

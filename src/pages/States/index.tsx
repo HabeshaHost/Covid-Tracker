@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { StateData, StateMetadata } from "../../api/types";
 import { Table, Spin, Alert } from "antd";
-import type { TableColumnsType } from "antd";
+import type { TableColumnsType, TablePaginationConfig } from "antd";
 import { toNumber } from "lodash";
 import useGetStateData from "../../hooks/useGetStateData";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
@@ -29,22 +29,21 @@ const statesMetaData =
   getFromSessionStorage<StateMetadata[]>(STATE_META_DATA_KEY) ?? [];
 
 const States: React.FC = () => {
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
   const { date } = useParams();
-  const [searchParam] = useSearchParams();
 
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
   const { search } = useLocation();
   const currentQuery = queryString.parse(search);
 
-  const defaultValue = statesMetaData
-    .filter(({ stateCode }) =>
-      String(currentQuery.states).split(",")?.includes(stateCode.toLowerCase())
-    )
-    .map(({ stateCode }) => stateCode.toLowerCase());
-
-  const { data, isLoading, isError } = useGetStateData({
+  const { data, isLoading, isError, total } = useGetStateData({
     selectedDate: date,
     selectedStates,
+    page: pagination.current,
+    pageSize: pagination.pageSize,
   });
 
   useEffect(() => {
@@ -84,7 +83,6 @@ const States: React.FC = () => {
       title: "Outcomes",
       dataIndex: ["outcomes", "hospitalized", "currently", "value"],
       key: "outcomes",
-      
     },
     {
       title: "In ICU",
@@ -128,6 +126,14 @@ const States: React.FC = () => {
             )[0].name,
             ...rest,
           }))}
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total,
+          }}
+          onChange={({ pageSize, current }) =>
+            setPagination({ pageSize: pageSize || 0, current: current || 0 })
+          }
         />
       </div>
     </AppWrapper>

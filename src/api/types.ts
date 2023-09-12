@@ -1,3 +1,13 @@
+export type ResponseType<T> = {
+  data: T[],
+  page: number,
+  pageSize: number,
+  total: number,
+};
+
+export type NationalResponse = ResponseType<NationalData>;
+export type StateDataResponse = ResponseType<StateData>;
+
 export type NationalData = {
   date: string;
   states: number;
