@@ -1,22 +1,111 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { StateData, StateMetadata } from "../../api/types";
+import {
+  StateData,
+  StateMetadata,
+  TestMetrics,
+} from "../../api/types";
 import { Table, Spin, Alert } from "antd";
 import type { TableColumnsType } from "antd";
-import { toNumber } from "lodash";
 import useGetStateData from "../../hooks/useGetStateData";
 import { useLocation, useParams } from "react-router-dom";
 import AppWrapper from "../../components/Wrappers/AppWrapper";
 import queryString from "query-string";
 import { STATE_META_DATA_KEY } from "../../utils/constants";
 import { getFromSessionStorage } from "../../utils/getFromSessionStorage";
+import './index.css';
 
-const containerStyle: React.CSSProperties = {
-  margin: "16px",
-  display: "flex",
-  flexDirection: "column",
-  padding: "16px",
-  background: "#fff",
-};
+const testsFilters = [
+  {
+    text: "PCR",
+    value: "pcr",
+    children: [
+      {
+        text: "Total",
+        value: "pcr->total",
+      },
+      {
+        text: "Pending",
+        value: "pcr->pending",
+      },
+      {
+        text: "Encounters",
+        value: "pcr->encounters",
+      },
+      {
+        text: "Specimens",
+        value: "pcr->specimens",
+      },
+      {
+        text: "Positive",
+        value: "pcr->positive",
+      },
+      {
+        text: "Negative",
+        value: "pcr->negative",
+      },
+    ],
+  },
+  {
+    text: "Antibody",
+    value: "antibody",
+    children: [
+      {
+        text: "Total",
+        value: "antibody->total",
+      },
+      {
+        text: "Pending",
+        value: "antibody->pending",
+      },
+      {
+        text: "Encounters",
+        value: "antibody->encounters",
+      },
+      {
+        text: "Specimens",
+        value: "antibody->specimens",
+      },
+      {
+        text: "Positive",
+        value: "antibody->positive",
+      },
+      {
+        text: "Negative",
+        value: "antibody->negative",
+      },
+    ],
+  },
+  {
+    text: "Antigen",
+    value: "antigen",
+    children: [
+      {
+        text: "Total",
+        value: "antigen->total",
+      },
+      {
+        text: "Pending",
+        value: "antigen->pending",
+      },
+      {
+        text: "Encounters",
+        value: "antigen->encounters",
+      },
+      {
+        text: "Specimens",
+        value: "antigen->specimens",
+      },
+      {
+        text: "Positive",
+        value: "antigen->positive",
+      },
+      {
+        text: "Negative",
+        value: "antigen->negative",
+      },
+    ],
+  },
+];
 
 const statesMetaData =
   getFromSessionStorage<StateMetadata[]>(STATE_META_DATA_KEY) ?? [];
@@ -27,7 +116,9 @@ const States: React.FC = () => {
     pageSize: 10,
   });
   const { date } = useParams();
-
+  const [currentOutcomeFilter, setCurrentOutcomeFilter] = useState("");
+  const [currentCaseFilter, setCurrentCaseFilter] = useState("");
+  const [currentTestFilter, setCurrentTestFilter] = useState<string[]>([]);
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
   const { search } = useLocation();
   const currentQuery = queryString.parse(search);
@@ -61,42 +152,59 @@ const States: React.FC = () => {
       sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
     {
-      title: "Cases",
-      dataIndex: ["cases", "total", "value"],
-      key: "cases",
-      sorter: (a, b) =>
-        toNumber(a.cases.total.value) - toNumber(b.cases.total.value),
-    },
-    {
-      title: "Testing",
-      dataIndex: ["testing", "total", "value"],
-      key: "testing",
-    },
-    {
       title: "Outcomes",
-      dataIndex: ["outcomes", "hospitalized", "currently", "value"],
+      dataIndex: ["outcomes", currentOutcomeFilter, "currently", "value"],
       key: "outcomes",
-    },
-    {
-      title: "In ICU",
-      dataIndex: ["outcomes", "hospitalized", "inIcu", "currently", "value"],
-      key: "inIcu",
-    },
-    {
-      title: "On Ventilator",
-      dataIndex: [
-        "outcomes",
-        "hospitalized",
-        "onVentilator",
-        "currently",
-        "value",
+      filters: [
+        { text: "Hospitalized", value: "hospitalized" },
+        { text: "Death", value: "death" },
+        { text: "Recovered", value: "recovered" },
       ],
-      key: "onVentilator",
+      filterMultiple: false,
+      onFilter: (value) => {
+        setCurrentOutcomeFilter(value as string);
+        return true;
+      },
     },
     {
-      title: "Death",
-      dataIndex: ["outcomes", "death", "total", "value"],
-      key: "death",
+      title: "Cases",
+      dataIndex: ["cases", currentCaseFilter, "value"],
+      key: "cases",
+      filters: [
+        { text: "Total", value: "total" },
+        { text: "Confirmed", value: "confirmed" },
+        { text: "Probable", value: "probable" },
+      ],
+      filterMultiple: false,
+      onFilter: (value) => {
+        setCurrentCaseFilter(value as string);
+        return true;
+      },
+    },
+    {
+      title: "Tests",
+      dataIndex: ["tests", ...currentTestFilter, "value"],
+      key: "tests",
+      filters: testsFilters,
+      onFilter: (value, record: StateData) => {
+        if (typeof value === "string") {
+          const [testType, metric] = value.split("->");
+          const typedTestType = testType as keyof StateData["tests"];
+          const typedMetric = metric as keyof TestMetrics;
+          const testValue = record.tests?.[typedTestType]?.[typedMetric]?.value;
+          const filterExists = testValue !== undefined && testValue !== null;
+          // Check if the filter value has changed
+          if (
+            currentTestFilter[0] !== testType ||
+            currentTestFilter[1] !== metric
+          ) {
+            setCurrentTestFilter([testType, metric]);
+          }
+          return filterExists;
+        }
+        return false;
+      },
+      filterMultiple: false,
     },
   ];
 
@@ -110,7 +218,7 @@ const States: React.FC = () => {
 
   return (
     <AppWrapper showFilter>
-      <div style={containerStyle}>
+      <div className="container-style">
         <Table
           columns={columns}
           dataSource={memoizedData?.map(({ state, ...rest }) => ({

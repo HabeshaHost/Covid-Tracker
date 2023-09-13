@@ -14,7 +14,6 @@ const useGetStateData = ({ selectedDate, selectedStates,page, pageSize }: GetSta
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<Error | null>(null);
   const [total, setTotal] = useState<number>(0);
-
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     setIsError(null);
@@ -22,6 +21,7 @@ const useGetStateData = ({ selectedDate, selectedStates,page, pageSize }: GetSta
       const data = await fetchStateData(selectedStates, selectedDate, page, pageSize);
       setData(data.data);
       setTotal(data.total);
+    // eslint-disable-next-line
     } catch (err: any) {
       setIsError(err);
     } finally {

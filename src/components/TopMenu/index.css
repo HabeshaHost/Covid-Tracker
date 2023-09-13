@@ -1,0 +1,5 @@
+.menu-bar {
+    margin-top: 24px;
+    justify-content: space-between;
+    display: flex;
+}

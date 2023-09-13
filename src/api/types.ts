@@ -1,8 +1,8 @@
 export type ResponseType<T> = {
-  data: T[],
-  page: number,
-  pageSize: number,
-  total: number,
+  data: T[];
+  page: number;
+  pageSize: number;
+  total: number;
 };
 
 export type NationalResponse = ResponseType<NationalData>;
@@ -16,8 +16,8 @@ export type NationalData = {
       value: number;
       calculated: {
         populationPercent: number;
-        changeFromPriorDay: number; 
-        sevenDayChangePercent: number; 
+        changeFromPriorDay: number;
+        sevenDayChangePercent: number;
       };
     };
   };
@@ -25,9 +25,9 @@ export type NationalData = {
     total: {
       value: number;
       calculated: {
-        populationPercent: number; 
-        changeFromPriorDay: number; 
-        sevenDayChangePercent: number; 
+        populationPercent: number;
+        changeFromPriorDay: number;
+        sevenDayChangePercent: number;
       };
     };
   };
@@ -36,31 +36,31 @@ export type NationalData = {
       currently: {
         value: number;
         calculated: {
-          populationPercent: number; 
-          changeFromPriorDay: number; 
-          sevenDayChangePercent: number; 
-          sevenDayAverage: number; 
+          populationPercent: number;
+          changeFromPriorDay: number;
+          sevenDayChangePercent: number;
+          sevenDayAverage: number;
         };
       };
       inIcu: {
         currently: {
           value: number;
           calculated: {
-            populationPercent: number; 
-            changeFromPriorDay: number; 
-            sevenDayChangePercent: number; 
-            sevenDayAverage: number; 
+            populationPercent: number;
+            changeFromPriorDay: number;
+            sevenDayChangePercent: number;
+            sevenDayAverage: number;
           };
         };
       };
-      onVentilator: { 
+      onVentilator: {
         currently: {
           value: number;
           calculated: {
-            populationPercent: number; 
-            changeFromPriorDay: number; 
-            sevenDayChangePercent: number; 
-            sevenDayAverage: number; 
+            populationPercent: number;
+            changeFromPriorDay: number;
+            sevenDayChangePercent: number;
+            sevenDayAverage: number;
           };
         };
       };
@@ -69,10 +69,10 @@ export type NationalData = {
       total: {
         value: number;
         calculated: {
-          populationPercent: number; 
-          changeFromPriorDay: number; 
-          sevenDayChangePercent: number; 
-          sevenDayAverage: number; 
+          populationPercent: number;
+          changeFromPriorDay: number;
+          sevenDayChangePercent: number;
+          sevenDayAverage: number;
         };
       };
     };
@@ -89,11 +89,6 @@ type CalculatedData = {
   changeFromPriorDay: number;
   sevenDayChangePercent: number;
   sevenDayAverage?: number;
-};
-
-type TestData = {
-  value: number;
-  calculated: CalculatedData;
 };
 
 type OutcomeData = {
@@ -129,6 +124,27 @@ type HospitalizedData = {
   };
 };
 
+type TestData = {
+  value: number;
+  calculated: CalculatedData;
+};
+
+export type TestMetrics = {
+  total: TestData;
+  pending?: TestData;
+  encounters?: TestData;
+  specimens?: TestData;
+  positive?: TestData;
+  negative?: TestData;
+};
+
+export type StateDataTests = {
+  pcr: TestMetrics;
+  antibody?: TestMetrics;
+  antigen?: TestMetrics;
+};
+
+//{ pcr: TestsData; antibody?: TestsData | undefined; antigen?: TestsData | undefined; }
 export type StateData = {
   date: string;
   state: string;
@@ -144,29 +160,7 @@ export type StateData = {
     confirmed: TestData;
     probable?: TestData;
   };
-  tests: {
-    pcr: {
-      total: TestData;
-      pending?: TestData;
-      encounters?: TestData;
-      specimens?: TestData;
-      positive?: TestData;
-      negative?: TestData;
-    };
-    people?: {
-      total?: TestData;
-      positive: TestData;
-      negative?: TestData;
-    };
-    antibody?: {
-      encounters?: TestData;
-      people?: TestData;
-    };
-    antigen?: {
-      encounters?: TestData;
-      people?: TestData;
-    };
-  };
+  tests: StateDataTests;
   outcomes: {
     recovered?: OutcomeData;
     hospitalized: HospitalizedData;

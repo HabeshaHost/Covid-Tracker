@@ -1,14 +1,17 @@
 import React from "react";
-import {
-  BankOutlined,
-} from "@ant-design/icons";
+import { BankOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { DatePicker, Menu } from "antd";
 import dayjs from "dayjs";
-import { DATA_COLLECTION_END_DATE, MENU_STATES, MENU_US } from "../../utils/constants";
+import {
+  DATA_COLLECTION_END_DATE,
+  MENU_STATES,
+  MENU_US,
+} from "../../utils/constants";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { updateOrAppendDateToPath } from "../../utils/updateOrAppendDateToPath";
 import { formatToPathDate } from "../../utils/formatToPathDate";
+import "./index.css";
 
 const items: MenuProps["items"] = [
   {
@@ -34,7 +37,7 @@ const TopMenu: React.FC = () => {
   const formatedDate = dayjs(date);
 
   const onClick: MenuProps["onClick"] = (e) => {
-    navigate(`/${e.key}`)
+    navigate(`/${e.key}`);
   };
 
   const disableDates = (current: string) => {
@@ -42,29 +45,29 @@ const TopMenu: React.FC = () => {
     const lastDate = new Date(DATA_COLLECTION_END_DATE);
     return currentDate > lastDate;
   };
-  
+
   const changeDate = (date: dayjs.Dayjs | null) => {
     const formattedDate = date ? formatToPathDate(date) : "";
     const newPathName = pathname === "/" ? "/us" : pathname;
     const updatedPath = updateOrAppendDateToPath(newPathName, formattedDate);
     navigate(`/${updatedPath}${search}`);
   };
-  
 
   return (
-    <div>
+    <div className="menu-bar">
       <Menu
         onClick={onClick}
         selectedKeys={[initialMenu]}
         mode="horizontal"
         items={items}
       />
-      <DatePicker
-        onChange={(date) => changeDate(date)}
-        disabledDate={(e) => disableDates(dayjs(e).format("YYYY-MM-DD"))}
-        defaultPickerValue={dayjs(DATA_COLLECTION_END_DATE)}
-        {...(date ? { defaultValue: formatedDate } : {})}
-      />
+       <DatePicker
+          onChange={(date) => changeDate(date)}
+          disabledDate={(e) => disableDates(dayjs(e).format("YYYY-MM-DD"))}
+          defaultPickerValue={dayjs(DATA_COLLECTION_END_DATE)}
+          {...(date ? { defaultValue: formatedDate } : {})}
+          size="large"
+        />
     </div>
   );
 };
