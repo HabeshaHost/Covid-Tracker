@@ -144,7 +144,6 @@ export type StateDataTests = {
   antigen?: TestMetrics;
 };
 
-//{ pcr: TestsData; antibody?: TestsData | undefined; antigen?: TestsData | undefined; }
 export type StateData = {
   date: string;
   state: string;
